@@ -12,7 +12,7 @@ paths:
       summary: Get all posts
       operationId: getPosts
       parameters:
-        - name: Search term
+        - name: term
           in: query
           required: false
           schema:
