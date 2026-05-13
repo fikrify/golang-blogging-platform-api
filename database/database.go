@@ -8,11 +8,8 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
-
-// ConnectDatabase initializes a connection to the SQLite database using GORM and assigns it to the global `DB` variable.
-// It logs a fatal error and
-func ConnectDatabase() {
+// Init establishes a connection to the SQLite database and returns a configured *gorm.DB instance.
+func Init() *gorm.DB {
 	db, err := gorm.Open(sqlite.Open("blog.db"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -20,5 +17,5 @@ func ConnectDatabase() {
 		log.Fatal("failed to connect database")
 	}
 
-	DB = db
+	return db
 }

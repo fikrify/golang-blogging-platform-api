@@ -20,7 +20,7 @@ func NewPostHandler(service *service.PostService) *PostHandler {
 func (h *PostHandler) GetPosts(c *gin.Context) {
 	searchTerm := c.Query("term")
 
-	posts, err := h.service.GetPosts(searchTerm)
+	posts, err := h.service.GetPosts(c.Request.Context(), searchTerm)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -39,7 +39,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 		return
 	}
 
-	err := h.service.CreatePost(&post)
+	err := h.service.CreatePost(c.Request.Context(), &post)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
@@ -61,7 +61,7 @@ func (h *PostHandler) GetPost(c *gin.Context) {
 	}
 
 	var post model.Post
-	post, err = h.service.GetPost(uint(id))
+	post, err = h.service.GetPost(c.Request.Context(), uint(id))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -94,7 +94,7 @@ func (h *PostHandler) UpdatePost(c *gin.Context) {
 	}
 
 	post.ID = uint(id)
-	err = h.service.UpdatePost(&post)
+	err = h.service.UpdatePost(c.Request.Context(), &post)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -117,7 +117,7 @@ func (h *PostHandler) DeletePost(c *gin.Context) {
 		return
 	}
 
-	err = h.service.DeletePost(uint(id))
+	err = h.service.DeletePost(c.Request.Context(), uint(id))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

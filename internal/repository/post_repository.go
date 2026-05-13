@@ -1,60 +1,71 @@
 package repository
 
 import (
-	"golang-blogging-platform-api/database"
+	"context"
 	"golang-blogging-platform-api/internal/model"
+
+	"gorm.io/gorm"
 )
 
-type PostRepository struct{}
+type PostRepository struct {
+	db *gorm.DB
+}
 
-func NewPostRepository() *PostRepository {
-	return &PostRepository{}
+func NewPostRepository(db *gorm.DB) *PostRepository {
+	return &PostRepository{db: db}
 }
 
 // FindAll retrieves a list of posts from the repository, optionally filtered by a search term in the title.
-func (r *PostRepository) FindAll(searchTerm string) ([]model.Post, error) {
+func (r *PostRepository) FindAll(ctx context.Context, searchTerm string) ([]model.Post, error) {
 	var posts []model.Post
 
-	query := database.DB.Model(&model.Post{})
+	query := r.db.
+		WithContext(ctx).
+		Model(&model.Post{})
 
 	if searchTerm != "" {
 		query.Where("title LIKE ?", "%"+searchTerm+"%")
 	}
 
-	result := database.DB.Find(&posts)
+	err := query.Find(&posts).Error
 
-	return posts, result.Error
+	return posts, err
 }
 
 // FindByID retrieves a single post from the database by its unique ID. Returns the post and an error if the operation fails.
-func (r *PostRepository) FindByID(id uint) (model.Post, error) {
+func (r *PostRepository) FindByID(ctx context.Context, id uint) (model.Post, error) {
 	var post model.Post
 
-	result := database.DB.First(&post, id)
+	err := r.db.
+		WithContext(ctx).
+		First(&post, id).
+		Error
 
-	return post, result.Error
+	return post, err
 }
 
 // Create inserts a new post into the database and returns an error if the operation fails.
-func (r *PostRepository) Create(post *model.Post) error {
-	result := database.DB.Create(&post)
-
-	return result.Error
+func (r *PostRepository) Create(ctx context.Context, post *model.Post) error {
+	return r.db.
+		WithContext(ctx).
+		Create(&post).
+		Error
 }
 
-// Update modifies an existing post in the repository based on the provided post data and returns an error if it fails.
-func (r *PostRepository) Update(post *model.Post) error {
-	result := database.DB.
+// Update modifies an existing post in the repository based on the provided post-data and returns an error if it fails.
+func (r *PostRepository) Update(ctx context.Context, post *model.Post) error {
+	return r.db.
+		WithContext(ctx).
 		Model(&model.Post{}).
 		Where("id = ?", post.ID).
-		Updates(post)
-
-	return result.Error
+		Updates(post).
+		Error
 }
 
 // Delete removes a post identified by its unique ID from the database and returns an error if the operation fails.
-func (r *PostRepository) Delete(id uint) error {
-	result := database.DB.Delete(&model.Post{}, id)
-
-	return result.Error
+func (r *PostRepository) Delete(ctx context.Context, id uint) error {
+	return r.db.
+		WithContext(ctx).
+		Delete(&model.Post{}, id).
+		Error
 }
