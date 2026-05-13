@@ -1,0 +1,126 @@
+openapi: 3.1.0
+info:
+  title: Blogging Platform API
+  description: Blogging Platform API
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:3000'
+    description: Local server
+paths:
+  /posts:
+    get:
+      summary: Get all posts
+      operationId: getPosts
+      parameters:
+        - name: Search term
+          in: query
+          required: false
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Posts found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Create blog post
+      operationId: createPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '201':
+          description: New post created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /posts/{id}:
+    get:
+      summary: Get blog post
+      operationId: getPost
+      responses:
+        '200':
+          description: Post found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          description: Post not found
+    put:
+      summary: Update blog post
+      operationId: updatePost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '200':
+          description: New post created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Post not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a post
+      operationId: deletePost
+      responses:
+        '204':
+          description: Post deleted
+        '404':
+          description: Post not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        tags:
+          $ref: '#/components/schemas/Tag'
+    Tag:
+      type: array
+      items:
+        type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
