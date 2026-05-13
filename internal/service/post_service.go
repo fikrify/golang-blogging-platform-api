@@ -25,12 +25,12 @@ func (s *PostService) GetPost(id uint) (model.Post, error) {
 }
 
 // CreatePost creates a new post in the repository and returns an error if the operation fails.
-func (s *PostService) CreatePost(post model.Post) error {
+func (s *PostService) CreatePost(post *model.Post) error {
 	return s.repo.Create(post)
 }
 
 // UpdatePost updates an existing post in the repository with new data and returns an error if the operation fails.
-func (s *PostService) UpdatePost(post model.Post) error {
+func (s *PostService) UpdatePost(post *model.Post) error {
 	return s.repo.Update(post)
 }
 

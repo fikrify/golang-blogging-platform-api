@@ -39,7 +39,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 		return
 	}
 
-	err := h.service.CreatePost(post)
+	err := h.service.CreatePost(&post)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
@@ -94,7 +94,7 @@ func (h *PostHandler) UpdatePost(c *gin.Context) {
 	}
 
 	post.ID = uint(id)
-	err = h.service.UpdatePost(post)
+	err = h.service.UpdatePost(&post)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

@@ -36,14 +36,14 @@ func (r *PostRepository) FindByID(id uint) (model.Post, error) {
 }
 
 // Create inserts a new post into the database and returns an error if the operation fails.
-func (r *PostRepository) Create(post model.Post) error {
+func (r *PostRepository) Create(post *model.Post) error {
 	result := database.DB.Create(&post)
 
 	return result.Error
 }
 
 // Update modifies an existing post in the repository based on the provided post data and returns an error if it fails.
-func (r *PostRepository) Update(post model.Post) error {
+func (r *PostRepository) Update(post *model.Post) error {
 	result := database.DB.
 		Model(&model.Post{}).
 		Where("id = ?", post.ID).
