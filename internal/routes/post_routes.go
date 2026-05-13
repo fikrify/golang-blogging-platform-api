@@ -8,12 +8,9 @@ import (
 
 // RegisterPostRoutes registers routes for managing posts, including CRUD operations, under the "/posts" route group.
 func RegisterPostRoutes(rg *gin.RouterGroup, postHandler *handler.PostHandler) {
-	postRoutes := rg.Group("/posts")
-	{
-		postRoutes.GET("/", postHandler.GetPosts)
-		postRoutes.POST("/", postHandler.CreatePost)
-		postRoutes.GET("/:id", postHandler.GetPost)
-		postRoutes.PUT("/:id", postHandler.UpdatePost)
-		postRoutes.DELETE("/:id", postHandler.DeletePost)
-	}
+	rg.GET("/", postHandler.GetPosts)
+	rg.POST("/", postHandler.CreatePost)
+	rg.GET("/:id", postHandler.GetPost)
+	rg.PUT("/:id", postHandler.UpdatePost)
+	rg.DELETE("/:id", postHandler.DeletePost)
 }

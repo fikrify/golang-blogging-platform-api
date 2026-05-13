@@ -24,7 +24,7 @@ func (r *PostRepository) FindAll(ctx context.Context, searchTerm string) ([]mode
 		Model(&model.Post{})
 
 	if searchTerm != "" {
-		query.Where("title LIKE ?", "%"+searchTerm+"%")
+		query = query.Where("title LIKE ?", "%"+searchTerm+"%")
 	}
 
 	err := query.Find(&posts).Error
@@ -48,7 +48,7 @@ func (r *PostRepository) FindByID(ctx context.Context, id uint) (model.Post, err
 func (r *PostRepository) Create(ctx context.Context, post *model.Post) error {
 	return r.db.
 		WithContext(ctx).
-		Create(&post).
+		Create(post).
 		Error
 }
 

@@ -1,19 +1,29 @@
 package handler
 
 import (
+	"context"
+	"errors"
 	"golang-blogging-platform-api/internal/model"
-	"golang-blogging-platform-api/internal/service"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-type PostHandler struct {
-	service *service.PostService
+type PostService interface {
+	GetPosts(ctx context.Context, term string) ([]model.Post, error)
+	GetPost(ctx context.Context, id uint) (model.Post, error)
+	CreatePost(ctx context.Context, post *model.Post) error
+	UpdatePost(ctx context.Context, post *model.Post) error
+	DeletePost(ctx context.Context, id uint) error
 }
 
-func NewPostHandler(service *service.PostService) *PostHandler {
+type PostHandler struct {
+	service PostService
+}
+
+func NewPostHandler(service PostService) *PostHandler {
 	return &PostHandler{service: service}
 }
 
@@ -23,7 +33,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 	posts, err := h.service.GetPosts(c.Request.Context(), searchTerm)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -41,7 +51,11 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 
 	err := h.service.CreatePost(c.Request.Context(), &post)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"message": "post not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -63,7 +77,11 @@ func (h *PostHandler) GetPost(c *gin.Context) {
 	var post model.Post
 	post, err = h.service.GetPost(c.Request.Context(), uint(id))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"message": "post not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
 		return
@@ -96,7 +114,11 @@ func (h *PostHandler) UpdatePost(c *gin.Context) {
 	post.ID = uint(id)
 	err = h.service.UpdatePost(c.Request.Context(), &post)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"message": "post not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": err.Error(),
 		})
 		return

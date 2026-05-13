@@ -3,15 +3,22 @@ package service
 import (
 	"context"
 	"golang-blogging-platform-api/internal/model"
-	"golang-blogging-platform-api/internal/repository"
 )
 
+type PostRepository interface {
+	FindAll(ctx context.Context, searchTerm string) ([]model.Post, error)
+	FindByID(ctx context.Context, id uint) (model.Post, error)
+	Create(ctx context.Context, post *model.Post) error
+	Update(ctx context.Context, post *model.Post) error
+	Delete(ctx context.Context, id uint) error
+}
+
 type PostService struct {
-	repo *repository.PostRepository
+	repo PostRepository
 }
 
 // NewPostService initializes a new instance of PostService with the given PostRepository.
-func NewPostService(repo *repository.PostRepository) *PostService {
+func NewPostService(repo PostRepository) *PostService {
 	return &PostService{repo: repo}
 }
 
