@@ -11,8 +11,14 @@ func NewPostRepository() *PostRepository {
 	return &PostRepository{}
 }
 
-func (r *PostRepository) FindAll() ([]model.Post, error) {
+func (r *PostRepository) FindAll(searchTerm string) ([]model.Post, error) {
 	var posts []model.Post
+
+	query := database.DB.Model(&model.Post{})
+
+	if searchTerm != "" {
+		query.Where("title LIKE ?", "%"+searchTerm+"%")
+	}
 
 	result := database.DB.Find(&posts)
 

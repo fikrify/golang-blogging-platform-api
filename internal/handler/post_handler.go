@@ -15,7 +15,9 @@ func NewPostHandler(service *service.PostService) *PostHandler {
 }
 
 func (h *PostHandler) GetPosts(c *gin.Context) {
-	posts, err := h.service.GetPosts()
+	searchTerm := c.Query("term")
+
+	posts, err := h.service.GetPosts(searchTerm)
 
 	if err != nil {
 		c.JSON(400, gin.H{"message": err.Error()})

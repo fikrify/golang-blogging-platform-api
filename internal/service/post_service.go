@@ -13,6 +13,6 @@ func NewPostService(repo *repository.PostRepository) *PostService {
 	return &PostService{repo: repo}
 }
 
-func (s *PostService) GetPosts() ([]model.Post, error) {
-	return s.repo.FindAll()
+func (s *PostService) GetPosts(searchTerm string) ([]model.Post, error) {
+	return s.repo.FindAll(searchTerm)
 }
